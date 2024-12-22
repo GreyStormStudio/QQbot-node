@@ -1,0 +1,6 @@
+appid=xxxx
+secret=xxxx
+sandbox=true
+logLevel=info
+maxRetry=10
+intents=GROUP_AT_MESSAGE_CREATE

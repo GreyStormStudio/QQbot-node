@@ -1,17 +1,27 @@
 import { Bot } from 'qq-official-bot'
 import ollama from 'ollama'
 import { putData, getData, updateData, delData, getKey } from './store/db.js'
+import fs from 'fs';
+
+const configFilePath = new URL('./config.cfg', import.meta.url);
+const configFile = fs.readFileSync(configFilePath, 'utf8');
+const config = configFile.split('\n').reduce((acc, line) => {
+    const [key, value] = line.split('=');
+    if (key && value) {
+        acc[key.trim()] = value.trim();
+    }
+    return acc;
+}, {});
+const intents = config.intents ? config.intents.split(',') : [];
 
 const bot = new Bot({
-    appid: '102115137',
-    secret: 'lkjihgfeeeeeeeeefghijklnprtvxz25',
-    sandbox: true, // 是否是沙箱环境 默认 false
-    logLevel: 'info', // 日志等级 默认 info
-    maxRetry: 10, // 最大重连次数 默认 10
-    intents: [
-        'GROUP_AT_MESSAGE_CREATE', // 群聊@消息事件 没有群权限请注释
-    ],
-})
+    appid: config.appid,
+    secret: config.secret,
+    sandbox: config.sandbox === 'true', // 转换字符串为布尔值
+    logLevel: config.logLevel,
+    maxRetry: parseInt(config.maxRetry, 10), // 转换字符串为数字
+    intents: intents,
+});
 //掷点功能
 function rollMultipleDice(numDice, sides) {
     if (numDice > 1e5 || sides > 1e5) {
